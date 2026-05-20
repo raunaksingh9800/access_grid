@@ -6,9 +6,10 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2, Send, MapPin, Users, Award,
-  ShieldCheck, BookOpen, Link2, Monitor, Bell, Mail
+  ShieldCheck, BookOpen, Link2, Monitor, Bell, Mail, FileText
 } from "lucide-react";
 
 const initials = (name: string) =>
@@ -88,45 +89,196 @@ function LoginScreen({ email, setEmail, loading, handleLogin }: any) {
 }
 
 /* ─── DETAILS FORM ─── */
-function DetailsForm({ participant, inputs, setInputs, loading, handleDetailsSubmit }: any) {
-  const fields = [
-    { key: "input_1", label: "Project repository", placeholder: "https://github.com/…", icon: BookOpen },
-    { key: "input_2", label: "Presentation deck", placeholder: "https://canva.com/…", icon: Link2 },
-    { key: "input_3", label: "Live demo", placeholder: "https://yourapp.vercel.app", icon: Monitor },
-  ];
+function DetailsForm({
+  participant,
+  inputs,
+  setInputs,
+  loading,
+  handleDetailsSubmit,
+}: any) {
+  const projectTitleRegex = /^[A-Za-z0-9]+-.+/;
+
+  const descriptionWordCount =
+    inputs.input_2?.trim()?.split(/\s+/).filter(Boolean).length || 0;
+
+  const isProjectTitleValid = projectTitleRegex.test(inputs.input_1 || "");
+
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex flex-col items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md">
-        <div className="mb-6">
-          <p className="text-xs font-medium text-[#1a73e8] uppercase tracking-wider mb-1">One more step</p>
-          <h2 className="text-xl font-semibold text-[#202124]">Hi {participant.name.split(" ")[0]}, submit your links</h2>
-          <p className="text-sm text-[#5f6368] mt-1">Your dashboard unlocks once these are saved.</p>
+    <div className="min-h-screen bg-gradient-to-br from-[#f6f8fc] to-[#eef2ff] flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl">
+        <div className="mb-8">
+          <div className="inline-flex items-center rounded-full bg-[#e8f0fe] px-3 py-1 text-xs font-medium text-[#1a73e8] mb-4">
+            Project Submission
+          </div>
+
+          <h2 className="text-3xl font-semibold tracking-tight text-[#202124]">
+            Hi {participant.name.split(" ")[0]}, complete your project details
+          </h2>
+
+          <p className="text-sm text-[#5f6368] mt-2 leading-relaxed">
+            Make sure all team members enter the exact same project title.
+            Incorrect formatting will be flagged during evaluation.
+          </p>
         </div>
-        <Card className="shadow-sm overflow-hidden">
+
+        <Card className="border border-[#e5e7eb] shadow-xl rounded-3xl overflow-hidden bg-white">
           <form onSubmit={handleDetailsSubmit}>
-            <div className="divide-y divide-[#f0f0f0]">
-              {fields.map(({ key, label, placeholder, icon: Icon }) => (
-                <div key={key} className="px-5 py-4 space-y-1.5">
-                  <Label className="text-xs font-medium text-[#3c4043] flex items-center gap-1.5">
-                    <Icon className="h-3.5 w-3.5 text-[#5f6368]" />{label}
+            <div className="p-6 space-y-8">
+
+              {/* Project Title */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-5 w-5 text-[#1a73e8]" />
+                  <Label className="text-base font-semibold text-[#202124]">
+                    Project Name
                   </Label>
-                  <Input
-                    value={(inputs as any)[key]}
-                    onChange={(e) => setInputs({ ...inputs, [key]: e.target.value })}
-                    placeholder={placeholder}
-                    required
-                    className="h-10 border-[#dadce0] rounded-lg text-sm focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8] placeholder:text-[#bdc1c6]"
-                  />
                 </div>
-              ))}
+
+                <Input
+                  value={inputs.input_1}
+                  onChange={(e) =>
+                    setInputs({
+                      ...inputs,
+                      input_1: e.target.value,
+                    })
+                  }
+                  placeholder="24SEAI06-Access Grid : Scalable QR based system for events"
+                  required
+                  className={`h-12 rounded-xl border text-sm px-4 ${inputs.input_1 &&
+                    !isProjectTitleValid
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : "border-[#d2d6dc]"
+                    }`}
+                />
+
+                <div className="rounded-xl bg-[#f8fafc] border border-[#e5e7eb] p-4 text-sm space-y-2">
+                  <p className="font-medium text-[#202124]">
+                    Required format
+                  </p>
+
+                  <p className="text-[#5f6368]">
+                    <span className="font-semibold">
+                      ProjectID-Project Title
+                    </span>
+                  </p>
+
+                  <p className="text-[#5f6368]">
+                    Example:
+                  </p>
+
+                  <div className="font-mono text-xs bg-white border border-[#e5e7eb] rounded-lg px-3 py-2 text-[#1a73e8] break-all">
+                    24SEAI06-Access Grid : Scalable QR based system for events
+                  </div>
+
+                  <p className="text-red-500 text-xs font-medium">
+                    Use "-" between Project ID and Title. "_" is invalid.
+                  </p>
+                </div>
+
+                {inputs.input_1 && !isProjectTitleValid && (
+                  <p className="text-sm text-red-500 font-medium">
+                    Invalid format. Use:
+                    {" "}
+                    <span className="font-mono">
+                      ProjectID-Project Title
+                    </span>
+                  </p>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-[#1a73e8]" />
+                  <Label className="text-base font-semibold text-[#202124]">
+                    Project Description
+                  </Label>
+                </div>
+
+                <Textarea
+                  value={inputs.input_2}
+                  onChange={(e) =>
+                    setInputs({
+                      ...inputs,
+                      input_2: e.target.value,
+                    })
+                  }
+                  placeholder="Describe your project, its purpose, how it works, the problem it solves, and key features..."
+                  required
+                  rows={7}
+                  className={`rounded-2xl border text-sm resize-none p-4 ${descriptionWordCount > 0 &&
+                    (descriptionWordCount < 100 ||
+                      descriptionWordCount > 300)
+                    ? "border-red-500 focus-visible:ring-red-500"
+                    : "border-[#d2d6dc]"
+                    }`}
+                />
+
+                <div className="flex items-center justify-between text-xs">
+                  <p
+                    className={`font-medium ${descriptionWordCount < 100 ||
+                      descriptionWordCount > 300
+                      ? "text-red-500"
+                      : "text-green-600"
+                      }`}
+                  >
+                    {descriptionWordCount} / 100–300 words
+                  </p>
+
+                  <p className="text-[#5f6368]">
+                    Minimum 100 words required
+                  </p>
+                </div>
+              </div>
+
+              {/* End User */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Users className="h-5 w-5 text-[#1a73e8]" />
+                  <Label className="text-base font-semibold text-[#202124]">
+                    Intended End Users
+                  </Label>
+                </div>
+
+                <Textarea
+                  value={inputs.input_3}
+                  onChange={(e) =>
+                    setInputs({
+                      ...inputs,
+                      input_3: e.target.value,
+                    })
+                  }
+                  placeholder="Who will use this project? Students, hospitals, event organizers, businesses, rural communities, etc."
+                  required
+                  rows={4}
+                  className="rounded-2xl border border-[#d2d6dc] text-sm resize-none p-4"
+                />
+
+                <p className="text-xs text-[#5f6368]">
+                  Be specific. "Everyone" is not a real target user group.
+                </p>
+              </div>
             </div>
-            <div className="px-5 py-4 bg-[#f8f9fa] border-t border-[#f0f0f0]">
+
+            <div className="border-t border-[#eef0f2] bg-[#fafbfc] px-6 py-5">
               <Button
                 type="submit"
-                disabled={loading}
-                className="w-full h-10 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-sm font-medium rounded-lg shadow-none"
+                disabled={
+                  loading ||
+                  !isProjectTitleValid ||
+                  descriptionWordCount < 100 ||
+                  descriptionWordCount > 300
+                }
+                className="w-full h-12 rounded-2xl bg-[#1a73e8] hover:bg-[#1557b0] text-white font-medium text-sm shadow-none"
               >
-                {loading ? <Loader2 className="animate-spin h-4 w-4" /> : <><Send className="h-3.5 w-3.5 mr-2" />Save & unlock dashboard</>}
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Submit Project Details
+                  </>
+                )}
               </Button>
             </div>
           </form>
