@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Loader2, Send, MapPin, Users, Award,
-  ShieldCheck, BookOpen, Link2, Monitor, Bell, Mail, FileText
+  ShieldCheck, BookOpen, Link2, Bell, Mail, FileText
 } from "lucide-react";
 
 const initials = (name: string) =>
@@ -414,12 +414,12 @@ function Dashboard({ participant, details, dashboardData }: any) {
 
             {/* Submitted links */}
             <Card className="shadow-sm overflow-hidden">
-              <SectionHeader icon={<Link2 className="h-4 w-4" />} title="Submitted links" />
+              <SectionHeader icon={<Link2 className="h-4 w-4" />} title="Submitted Details" />
               <div className="divide-y divide-[#f0f0f0]">
                 {[
-                  { label: "Project repository", value: details.input_1, icon: BookOpen },
-                  { label: "Presentation deck", value: details.input_2, icon: Link2 },
-                  { label: "Live demo", value: details.input_3, icon: Monitor },
+                  { label: "Project Name", value: details.input_1, icon: BookOpen },
+                  { label: "Project Description", value: details.input_2, icon: FileText },
+                  { label: "Intended End User", value: details.input_3, icon: Users },
                 ].map(({ label, value, icon: Icon }) => (
                   <div key={label} className="px-5 py-3.5 flex items-start gap-3">
                     <Icon className="h-4 w-4 text-[#5f6368] mt-0.5 shrink-0" />
