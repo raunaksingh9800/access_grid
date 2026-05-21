@@ -47,7 +47,7 @@ function LoginScreen({ email, setEmail, loading, handleLogin }: any) {
               <Label className="text-xs font-medium text-[#3c4043]">Email address</Label>
               <Input
                 type="email"
-                placeholder="evaluator@example.com"
+                placeholder="name@atria.edu.in"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

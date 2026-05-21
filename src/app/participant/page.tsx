@@ -103,7 +103,7 @@ function LoginScreen({ email, setEmail, loading, handleLogin }: any) {
               </Label>
               <Input
                 type="email"
-                placeholder="you@example.com"
+                placeholder="1at24bbnnn@atria.edu"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
