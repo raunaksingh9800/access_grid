@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Calendar, ChevronRight, BookOpen, ArrowLeft } from "lucide-react";
+import { Loader2, Calendar, ChevronRight, BookOpen, ArrowLeft, Play, XCircle } from "lucide-react";
 
 const initials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
@@ -117,14 +117,54 @@ function EventPicker({ evaluator, events, onSelect }: any) {
   );
 }
 
+
+function OfflineWarning() {
+  const [isOffline, setIsOffline] = useState(false);
+
+  useEffect(() => {
+    const handleOffline = () => setIsOffline(true);
+    const handleOnline = () => setIsOffline(false);
+    setIsOffline(!navigator.onLine);
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
+  if (!isOffline) return null;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#202124]/60 backdrop-blur-sm">
+      <div className="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full mx-4 text-center border border-[#e0e0e0]">
+        <div className="w-14 h-14 mx-auto bg-[#fce8e6] rounded-full flex items-center justify-center mb-4">
+          <svg className="w-7 h-7 text-[#d93025]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-[#202124] tracking-tight mb-2">Internet Disconnected</h2>
+        <p className="text-[#5f6368] mb-6 text-sm leading-relaxed">Evaluation is paused. Real-time updates and attendance tracking require an active internet connection.</p>
+        <div className="flex items-center justify-center gap-2 text-sm font-medium text-[#d93025] bg-[#fce8e6] py-2 px-4 rounded-full mx-auto w-fit">
+          <span className="w-2 h-2 rounded-full bg-[#d93025] animate-pulse"></span>
+          Waiting for connection...
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── ATTENDANCE DASHBOARD ─── */
-function AttendanceDashboard({ evaluator, events, selectedEventId, teams, students, attendanceRecords, loading, onBack, onToggle }: any) {
+
+function AttendanceDashboard({ evaluator, events, selectedEventId, teams, students, attendanceRecords, loading, onBack, onToggle, rooms, queueData, handleNextTeam, handleTeamNotPresent }: any) {
   const eventName = events.find((e: any) => e.id === selectedEventId)?.name ?? "";
   const presentCount = Object.values(attendanceRecords).filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa]">
-      <header className="bg-white border-b border-[#e0e0e0] sticky top-0 z-10">
+    <>
+      <OfflineWarning />
+      <div className="min-h-screen bg-[#f8f9fa]">
+        <header className="bg-white border-b border-[#e0e0e0] sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
           <button
             onClick={onBack}
@@ -147,37 +187,72 @@ function AttendanceDashboard({ evaluator, events, selectedEventId, teams, studen
           <div className="flex justify-center py-20">
             <Loader2 className="w-6 h-6 animate-spin text-[#1a73e8]" />
           </div>
-        ) : teams.length === 0 ? (
-          <Card className="shadow-sm">
-            <div className="px-5 py-10 text-center">
-              <p className="text-sm font-medium text-[#202124]">No teams assigned</p>
-              <p className="text-xs text-[#5f6368] mt-1">You don't have any teams for this event.</p>
-            </div>
-          </Card>
-        ) : (
-          teams.map((team: any) => {
-            const teamStudents = students.filter((s: any) => s.sip_id === team.id);
+        ) : rooms && queueData && rooms.length > 0 ? (
+          rooms.map((room: any) => {
+            const roomQueue = queueData.filter((q: any) => q.room_id === room.id);
+            if (roomQueue.length === 0) {
+              return (
+                <Card key={"queue-empty-" + room.id} className="shadow-sm overflow-hidden mb-6">
+                  <SectionHeader icon={<Play className="h-4 w-4 text-[#5f6368]" />} title={"Presentation Queue - " + room.name} />
+                  <div className="p-10 text-center">
+                    <p className="text-sm font-medium text-[#202124]">Queue Completed</p>
+                    <p className="text-xs text-[#5f6368] mt-1">All teams for this room have been evaluated.</p>
+                  </div>
+                </Card>
+              );
+            }
+
+            const currentTeamQueueItem = roomQueue[0];
+            const activeTeamId = currentTeamQueueItem.team_id;
+            const activeTeamData = teams.find((t: any) => t.id === activeTeamId) || currentTeamQueueItem.team;
+
+            const teamStudents = students.filter((s: any) => s.sip_id === activeTeamId);
             const teamPresent = teamStudents.filter((s: any) => attendanceRecords[s.id]).length;
+
             return (
-              <Card key={team.id} className="shadow-sm overflow-hidden">
-                <div className="px-5 py-4 flex items-start justify-between gap-3 border-b border-[#f0f0f0]">
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#202124] truncate">{team.name}</p>
-                    <div className="flex items-center gap-2 mt-1 flex-wrap">
-                      <span className="text-xs text-[#1a73e8] bg-[#e8f0fe] px-2 py-0.5 rounded-full font-medium">
-                        SDG {team.SDG}
-                      </span>
-                      {team.is_star && (
-                        <span className="text-xs text-[#f29900] bg-[#fef9e7] px-2 py-0.5 rounded-full font-medium border border-[#f9e0a0]">
-                          ★ Star Team
+              <Card key={"queue-" + room.id} className="shadow-sm overflow-hidden mb-6 border-[#1a73e8] border-opacity-30">
+                <SectionHeader icon={<Play className="h-4 w-4 text-[#1a73e8]" />} title={"Evaluating Now - " + room.name} />
+
+                {/* Team Info Header */}
+                <div className="p-5 bg-gradient-to-r from-[#f8fbff] to-white border-b border-[#f0f0f0]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                      <p className="text-lg font-bold text-[#202124]">{activeTeamData?.name || "Unknown Team"}</p>
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        {activeTeamData?.SDG && (
+                          <span className="text-xs text-[#1a73e8] bg-[#e8f0fe] px-2 py-0.5 rounded-full font-medium">
+                            SDG {activeTeamData.SDG}
+                          </span>
+                        )}
+                        {currentTeamQueueItem.absent_count > 0 && (
+                          <span className="text-xs text-[#d93025] bg-[#fce8e6] px-2 py-0.5 rounded-full font-medium">
+                            Absent {currentTeamQueueItem.absent_count} time(s)
+                          </span>
+                        )}
+                        <span className="text-xs text-[#5f6368] bg-[#f1f3f4] px-2.5 py-0.5 rounded-full font-medium">
+                          {teamPresent}/{teamStudents.length} Present
                         </span>
-                      )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        onClick={() => handleTeamNotPresent(currentTeamQueueItem)}
+                        variant="outline"
+                        className="h-9 text-xs border-[#d2d6dc] text-[#5f6368] hover:bg-[#f1f3f4]"
+                      >
+                        Not Present
+                      </Button>
+                      <Button
+                        onClick={() => handleNextTeam(currentTeamQueueItem.id)}
+                        className="h-9 text-xs bg-[#1a73e8] hover:bg-[#1557b0] text-white shadow-none"
+                      >
+                        Complete & Next
+                      </Button>
                     </div>
                   </div>
-                  <span className="text-xs text-[#5f6368] bg-[#f1f3f4] px-2.5 py-1 rounded-full shrink-0 font-medium">
-                    {teamPresent}/{teamStudents.length}
-                  </span>
                 </div>
+
+                {/* Students List */}
                 {teamStudents.length === 0 ? (
                   <p className="px-5 py-4 text-sm text-[#5f6368]">No students found.</p>
                 ) : (
@@ -190,8 +265,7 @@ function AttendanceDashboard({ evaluator, events, selectedEventId, teams, studen
                           className={`flex items-center justify-between px-5 py-3.5 transition-colors ${isPresent ? "bg-[#f6fef9]" : ""}`}
                         >
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 transition-colors ${isPresent ? "bg-[#e6f4ea] text-[#188038]" : "bg-[#f1f3f4] text-[#5f6368]"
-                              }`}>
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 transition-colors ${isPresent ? "bg-[#e6f4ea] text-[#188038]" : "bg-[#f1f3f4] text-[#5f6368]"}`}>
                               {initials(student.name)}
                             </div>
                             <div className="min-w-0">
@@ -217,9 +291,17 @@ function AttendanceDashboard({ evaluator, events, selectedEventId, teams, studen
               </Card>
             );
           })
+        ) : (
+          <Card className="shadow-sm">
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm font-medium text-[#202124]">No rooms assigned</p>
+              <p className="text-xs text-[#5f6368] mt-1">You don't have any rooms for this event.</p>
+            </div>
+          </Card>
         )}
       </main>
     </div>
+    </>
   );
 }
 
@@ -233,27 +315,80 @@ export default function EvaluatorPage() {
   const [teams, setTeams] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<Record<string, boolean>>({});
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [queueData, setQueueData] = useState<any[]>([]);
 
-  const setupRealtime = (eventId: string) => {
+  const fetchQueueData = async (evtId: string, currentRooms: any[]) => {
+    const { data: qData } = await supabase
+      .from("presentation_queue")
+      .select(`*, team:team_id(id, name, "SDG", is_star)`)
+      .in("room_id", currentRooms.map((r: any) => r.id))
+      .eq("event_id", evtId)
+      .eq("status", "waiting")
+      .order("position", { ascending: true });
+    if (qData) setQueueData(qData);
+  };
+
+  const handleNextTeam = async (queueId: string) => {
+    const { error } = await supabase
+      .from("presentation_queue")
+      .update({ status: 'completed', updated_at: new Date().toISOString() })
+      .eq("id", queueId);
+    if (error) toast.error("Failed to update queue");
+  };
+
+  const handleTeamNotPresent = async (queueItem: any) => {
+    const roomQueue = queueData.filter(q => q.room_id === queueItem.room_id);
+    const maxPosition = Math.max(...roomQueue.map(q => q.position), queueItem.position);
+
+    const { error } = await supabase
+      .from("presentation_queue")
+      .update({
+        position: maxPosition + 1,
+        absent_count: queueItem.absent_count + 1,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", queueItem.id);
+
+    if (error) toast.error("Failed to update queue");
+  };
+
+  const setupRealtime = (eventId: string, currentRooms: any[]) => {
     const channelName = `eval_att_${eventId}`;
     const existing = supabase.getChannels().find(c => c.topic === channelName);
-    if (existing) supabase.removeChannel(existing);
+    
+    if (!existing) {
+      supabase
+        .channel(channelName)
+        .on("postgres_changes",
+          { event: "INSERT", schema: "public", table: "attendance", filter: `event_id=eq.${eventId}` },
+          (payload) => setAttendanceRecords((prev) => ({ ...prev, [payload.new.student_id]: true }))
+        )
+        .on("postgres_changes",
+          { event: "DELETE", schema: "public", table: "attendance", filter: `event_id=eq.${eventId}` },
+          (payload) => setAttendanceRecords((prev) => {
+            const next = { ...prev };
+            delete next[payload.old.student_id];
+            return next;
+          })
+        )
+        .subscribe();
+    }
 
-    supabase
-      .channel(channelName)
-      .on("postgres_changes",
-        { event: "INSERT", schema: "public", table: "attendance", filter: `event_id=eq.${eventId}` },
-        (payload) => setAttendanceRecords((prev) => ({ ...prev, [payload.new.student_id]: true }))
-      )
-      .on("postgres_changes",
-        { event: "DELETE", schema: "public", table: "attendance", filter: `event_id=eq.${eventId}` },
-        (payload) => setAttendanceRecords((prev) => {
-          const next = { ...prev };
-          delete next[payload.old.student_id];
-          return next;
-        })
-      )
-      .subscribe();
+    const qChannelName = `eval_queue_${eventId}`;
+    const qExisting = supabase.getChannels().find(c => c.topic === qChannelName);
+    
+    if (!qExisting) {
+      supabase
+        .channel(qChannelName)
+        .on("postgres_changes",
+          { event: "*", schema: "public", table: "presentation_queue", filter: `event_id=eq.${eventId}` },
+          () => {
+            fetchQueueData(eventId, currentRooms);
+          }
+        )
+        .subscribe();
+    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -283,11 +418,48 @@ export default function EvaluatorPage() {
       const { data: rooms } = await supabase
         .from("rooms").select("id, name").in("panel_id", panels.map((p: any) => p.id));
       if (!rooms?.length) { setLoading(false); return; }
+      setRooms(rooms);
 
       const { data: assignedTeams } = await supabase
         .from("team").select("*").in("allocated_room", rooms.map((r: any) => r.id));
       if (!assignedTeams) { setLoading(false); return; }
       setTeams(assignedTeams);
+
+      for (const room of rooms) {
+        const { data: existingQ } = await supabase
+          .from("presentation_queue")
+          .select("id")
+          .eq("room_id", room.id)
+          .eq("event_id", eventId);
+        
+        if (!existingQ || existingQ.length === 0) {
+          const roomTeams = assignedTeams.filter((t: any) => t.allocated_room === room.id);
+          if (roomTeams.length > 0) {
+            const { data: maxQ } = await supabase
+              .from("presentation_queue")
+              .select("position")
+              .eq("room_id", room.id)
+              .order("position", { ascending: false })
+              .limit(1);
+            
+            let startPos = 1;
+            if (maxQ && maxQ.length > 0) {
+              startPos = maxQ[0].position + 1;
+            }
+
+            const inserts = roomTeams.map((t: any, idx: number) => ({
+              event_id: eventId,
+              room_id: room.id,
+              team_id: t.id,
+              position: startPos + idx,
+              status: 'waiting'
+            }));
+            await supabase.from("presentation_queue").insert(inserts);
+          }
+        }
+      }
+
+      await fetchQueueData(eventId, rooms);
 
       const { data: assignedStudents } = await supabase
         .from("participant").select("id, name, email, sip_id")
@@ -300,7 +472,7 @@ export default function EvaluatorPage() {
       attData?.forEach((r: any) => { attMap[r.student_id] = true; });
       setAttendanceRecords(attMap);
 
-      setupRealtime(eventId);
+      setupRealtime(eventId, rooms);
     } catch { toast.error("Failed to load data"); }
     finally { setLoading(false); }
   };
@@ -338,6 +510,10 @@ export default function EvaluatorPage() {
       loading={loading}
       onBack={() => setSelectedEventId("")}
       onToggle={toggleAttendance}
+      rooms={rooms}
+      queueData={queueData}
+      handleNextTeam={handleNextTeam}
+      handleTeamNotPresent={handleTeamNotPresent}
     />
   );
 }
