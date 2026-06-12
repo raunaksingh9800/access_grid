@@ -29,10 +29,10 @@ export function QueueBentoCard({ queueData, dashboardData }: QueueBentoCardProps
             {/* Interactive At-a-Glance Bento Block */}
             <BentoCard
                 onClick={() => setIsModalOpen(true)}
-                className="p-4 flex flex-col justify-between aspect-square relative bg-white/40 border border-[#1a73e8]/20 shadow-sm hover:bg-white/60 transition-all duration-200 cursor-pointer group active:scale-[0.98]"
+                className="p-5 flex flex-col justify-between aspect-square relative hover:bg-white/50 transition-all duration-200 cursor-pointer group active:scale-[0.98]"
             >
                 <div className="w-full flex justify-center items-center">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase">
+                    <p className="text-[11px] font-medium tracking-wide text-[#989893] uppercase text-center">
                         Evaluation Queue
                     </p>
                 </div>
@@ -50,28 +50,26 @@ export function QueueBentoCard({ queueData, dashboardData }: QueueBentoCardProps
                                     gap={4}
                                     textColor="black"
                                     fontWeight={900}
-
                                 />
-
                             </div>
-                            <p className="text-[10px] font-bold text-gray-500 uppercase tracking-tight mt-3">
+                            <p className="text-[11px] font-bold text-[#767676] uppercase tracking-tight mt-3">
                                 {teamsAhead === 1 ? "Team Ahead" : "Teams Ahead"}
                             </p>
                         </>
                     ) : (
                         <>
-                            <span className="text-2xl font-bold text-gray-400 tracking-tight">
+                            <span className="text-[40px] font-bold text-black tracking-tight leading-none">
                                 {hasQueueData && myTeamIndex === -1 ? "Idle" : "Empty"}
                             </span>
-                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tight mt-1">
+                            <p className="text-[11px] font-bold text-[#767676] uppercase tracking-tight mt-2">
                                 {hasQueueData && myTeamIndex === -1 ? "Not in Live Queue" : "No Teams Waiting"}
                             </p>
                         </>
                     )}
                 </div>
 
-                <div className="w-full text-right">
-                    <span className="text-[9px] font-medium text-gray-400 group-hover:text-[#1a73e8] transition-colors">
+                <div className="w-full text-center">
+                    <span className="text-[11px] font-bold text-black group-hover:text-neutral-500 transition-colors">
                         View Details →
                     </span>
                 </div>

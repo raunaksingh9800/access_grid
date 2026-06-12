@@ -12,7 +12,7 @@ export function BentoCard({ children, className = "", onClick }: BentoCardProps)
     return (
         <div 
             onClick={onClick}
-            className={`bg-transparent rounded-3xl border border-[#dcd8c8] overflow-hidden ${className}`}
+            className={`bg-white/30 rounded-[24px] border-[1.5px] border-black overflow-hidden ${className}`}
         >
             {children}
         </div>

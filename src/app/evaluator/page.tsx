@@ -38,7 +38,13 @@ function LoginScreen({ email, setEmail, loading, handleLogin }: any) {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white border-[1.5px] border-black rounded-[24px] mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <img src="./luna-light-logo.png" alt="" className="w-12 h-12 object-contain" />
+
+            <div className="flex gap-1.5 items-center">
+              <div className="w-5 h-12 bg-[#FFD3A5] rounded-full border-[1.5px] border-black" />
+              <div className="w-[22px] h-[30px] bg-[#BDB2FF] rounded-full self-end border-[1.5px] border-black" />
+            </div>
+
+
           </div>
           <h1 className="text-3xl font-bold text-black tracking-tight">Evaluator Portal</h1>
           <p className="mt-2 text-sm text-[#767676] font-serif">Sign in with your official email</p>
@@ -81,7 +87,6 @@ function EventPicker({ evaluator, events, onSelect }: any) {
           </div>
           <div className="min-w-0">
             <p className="text-base font-bold text-black leading-tight truncate">{evaluator.name}</p>
-            <p className="text-sm text-[#767676] truncate font-serif">{evaluator.department}</p>
           </div>
         </div>
       </header>
@@ -364,7 +369,7 @@ function AttendanceDashboard({ evaluator, events, selectedEventId, teams, studen
                     </Card>
 
                     {/* Team Control Panel - Floating Sticky */}
-                    <div className="fixed right-0 bottom-6 z-20 flex flex-col sm:flex-row items-center justify-center md:justify-end gap-4 mt-6 pointer-events-none px-2">
+                    <div className="fixed  right-0 bottom-6 z-20 flex flex-col sm:flex-row items-center justify-center md:justify-end  md:w-auto gap-4 mt-6 pointer-events-none px-2">
                       <div className="pointer-events-auto bg-white/90 backdrop-blur-md p-3 md:p-4 rounded-full border-[1.5px] border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex gap-3 w-full sm:w-auto">
                         <Button
                           onClick={() => handleTeamNotPresent(currentTeamQueueItem)}
@@ -605,13 +610,13 @@ export default function EvaluatorPage() {
     setAttendanceRecords((prev) => ({ ...prev, [studentId]: !currentStatus }));
 
     if (!currentStatus) {
-      toast.success("Marked Present", { duration: 1000 });
+      toast.success("Marked Present", { duration: 500 });
       const { error } = await supabase.from("attendance").insert({ student_id: studentId, event_id: selectedEventId });
       if (error && error.code !== "23505") {
         toast.error("Failed to sync present status to cloud (saved locally)");
       }
     } else {
-      toast.success("Marked Absent", { duration: 1000 });
+      toast.success("Marked Absent", { duration: 500 });
       const { error } = await supabase.from("attendance").delete()
         .match({ student_id: studentId, event_id: selectedEventId });
       if (error) {

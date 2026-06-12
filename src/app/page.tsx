@@ -1,60 +1,73 @@
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { UserCircle, Users } from 'lucide-react';
+import { ChevronRight } from 'lucide-react'; // Swapped for directional navigation clarity
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between bg-[#F4F3ED] px-6 py-12 text-[#2D2D2D] font-sans antialiased selection:bg-purple-200">
+    // Base layout utilizing Warm Cream (#F4F3ED) background
+    <div className="flex min-h-screen items-center justify-center  p-4 md:p-8 font-sans antialiased">
 
-      {/* Top Brand Logo Mimic */}
-      <div className="w-full max-w-md flex justify-start pl-4 pt-4">
-        <div className="flex gap-1.5 items-center">
-          <img className="w-12" src="/luna-light-logo.png" alt="" />
+      {/* Main Device Container - Adheres to rounded-[40px] and solid black border-[1.5px] if framed, or clean bounds */}
+      <div className="w-full max-w-md  rounded-[40px] p-8 flex flex-col justify-between min-h-[780px] shadow-none">
+
+        {/* 1. Global Brand Header Component */}
+        <div className="flex items-center gap-3 w-full justify-start ">
+          <div className="flex gap-1.5 items-center">
+            <div className="w-5 h-12 bg-[#FFD3A5] rounded-full border-[1.5px] border-black" />
+            <div className="w-[22px] h-[30px] bg-[#BDB2FF] rounded-full self-end border-[1.5px] border-black" />
+          </div>
+          <h1 className="text-[32px] ml-3 mt-4 font-bold tracking-tight text-black">
+            Iluna <span className="font-normal text-[#595959]">Mark</span>
+          </h1>
         </div>
-      </div>
 
-      {/* Main Content Area */}
-      <div className="flex flex-col items-center text-center max-w-md w-full px-4 my-auto gap-8">
+        {/* 2. Main Content / Illustration Area */}
+        <div className="flex flex-col items-center text-center pt-6 gap-6">
 
-        {/* Placeholder for Character Illustration */}
-        <div className="w-64 h-64 relative my-4 flex items-center justify-center bg-white/40 rounded-full border border-dashed border-neutral-300">
-          <div className="w-72 h-72  rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
-            <img src="/mos.png" alt="mos" className="object-cover w-full h-full" />
+          {/* Avatar/Illustration Frame Container with System Geometry */}
+          <div className="w-72 h-72 relative flex items-center justify-center  border-black rounded-[24px] overflow-hidden">
+            <img
+              src="/mos.png"
+              alt="Illustration"
+              className="object-cover w-full h-full"
+            />
+          </div>
+
+          {/* Typography Block aligning with Token Specifications */}
+          <div className="space-y-1.5">
+            <p className="font-serif italic text-[#767676] text-[15px]">
+              Welcome to the next-generation
+            </p>
+            <p className="text-[11px] font-medium tracking-wide text-[#989893] uppercase">
+              Evaluation System
+            </p>
           </div>
         </div>
 
-        {/* Typography block matching "Welcome to Iluna Forms" */}
-        <div className="space-y-1">
-          <p className="text-sm font-medium tracking-wide text-neutral-500">
-            Welcome to
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
-            lluna <span className="font-normal text-neutral-600">Mark</span>
-          </h1>
-          <p className="text-xs text-neutral-400 max-w-xs mx-auto pt-2">
-            The next-generation evaluation system.
-          </p>
-        </div>
+        {/* 3. Action Buttons - Adhering to Standard Action Button (h-[60px], bg-black) */}
+        <div className="w-full flex flex-col gap-4">
 
-        {/* Action Buttons styled like the primary "Countinue" button */}
-        <div className="w-full flex flex-col gap-3 pt-2">
+          {/* Primary Action Button */}
           <Link href="/participant" className="w-full">
-            <Button className="w-full bg-black hover:bg-neutral-800 text-white rounded-full py-6 text-base font-semibold transition-all shadow-sm">
+            <button className="w-full h-[60px] bg-black hover:bg-neutral-900 text-white font-sans font-medium text-lg rounded-full transition-colors flex items-center justify-center gap-2">
               Continue as Participant
-            </Button>
+            </button>
           </Link>
 
+          {/* Secondary Action Button - Styled with system borders and fonts */}
           <Link href="/evaluator" className="w-full">
-            <Button className="w-full bg-transparent hover:bg-neutral-200/50  mt-2 text-neutral-700 rounded-full py-6 text-sm font-medium transition-all border border-neutral-400">
+            <button className="w-full h-[60px] bg-transparent hover:bg-black/5 text-black font-sans font-medium text-lg border-[1.5px] border-black rounded-full transition-colors flex items-center justify-center gap-2">
               Enter Evaluator Portal
-            </Button>
+            </button>
           </Link>
         </div>
-      </div>
 
-      {/* Subtle Footer Subtext matching "Continuing as..." */}
-      <div className="w-full text-center text-[11px] mt-4 font-medium text-neutral-400 tracking-wide">
-        System active for <span className="font-semibold text-neutral-600">Live events</span>
+        {/* 4. Bento Grid/System Style Footer Label */}
+        <div className="w-full text-center pt-6 border-t border-black/10 mt-6">
+          <p className="text-[11px] font-medium tracking-wide text-[#989893]">
+            SYSTEM ACTIVE FOR <span className="font-bold text-black uppercase">Live Events</span>
+          </p>
+        </div>
+
       </div>
     </div>
   );
