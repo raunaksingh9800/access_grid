@@ -49,7 +49,7 @@ export default function Home() {
           {/* Primary Action Button */}
           <Link href="/participant" className="w-full">
             <button className="w-full h-[60px] bg-black hover:bg-neutral-900 text-white font-sans font-medium text-lg rounded-full transition-colors flex items-center justify-center gap-2">
-              Continue as Participant
+              Continue as Student
             </button>
           </Link>
 
