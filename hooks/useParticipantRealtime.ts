@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 export function useParticipantRealtime(
     participantId: string | null,
+    setIsAttended: (attended: boolean) => void,
     onAttendanceChange?: () => void
 ) {
     useEffect(() => {
@@ -14,7 +15,7 @@ export function useParticipantRealtime(
         const channelName = `attendance_${participantId}`;
         const existing = supabase
             .getChannels()
-            .find((c) => c.topic === channelName);
+            .find((c) => c.topic === channelName || c.topic === `realtime:${channelName}`);
 
         if (!existing) {
             supabase
@@ -49,7 +50,7 @@ export function useParticipantRealtime(
         }
 
         const qChannelName = `queue_part_${participantId}`;
-        const qExisting = supabase.getChannels().find((c) => c.topic === qChannelName);
+        const qExisting = supabase.getChannels().find((c) => c.topic === qChannelName || c.topic === `realtime:${qChannelName}`);
 
         if (!qExisting) {
             supabase
@@ -65,8 +66,14 @@ export function useParticipantRealtime(
         }
 
         return () => {
-            supabase.removeChannel(supabase.channel(channelName));
-            supabase.removeChannel(supabase.channel(qChannelName));
+            const attChan = supabase.getChannels().find((c) => c.topic === channelName || c.topic === `realtime:${channelName}`);
+            if (attChan) {
+                supabase.removeChannel(attChan);
+            }
+            const qChan = supabase.getChannels().find((c) => c.topic === qChannelName || c.topic === `realtime:${qChannelName}`);
+            if (qChan) {
+                supabase.removeChannel(qChan);
+            }
         };
-    }, [participantId, onAttendanceChange]);
+    }, [participantId, onAttendanceChange, setIsAttended]);
 }

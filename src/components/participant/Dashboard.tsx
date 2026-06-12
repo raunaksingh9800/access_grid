@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { BentoCard } from "./BentoCard";
-import { Avatar } from "./Avatar";
-import { Participant, ParticipantDetails, DashboardData, QueueData } from "../../../types/participant";
+import { QueueBentoCard } from "./QueueBentoCard"; // Imported standalone component
+import { Participant, DashboardData, QueueData } from "../../../types/participant";
 import { initials } from "../../../utils/helper";
 
 interface DashboardProps {
     participant: Participant;
-    details: ParticipantDetails;
     dashboardData: DashboardData | null;
     isAttended?: boolean;
     queueData?: QueueData[];
@@ -17,7 +16,7 @@ interface DashboardProps {
 
 export function Dashboard({
     participant,
-    details,
+
     dashboardData,
     isAttended = false,
     queueData
@@ -27,11 +26,7 @@ export function Dashboard({
 
     useEffect(() => {
         if (dashboardData) {
-            // Trigger the staggered top-to-bottom fade out
             setFadeOut(true);
-
-            // Remove skeleton from DOM entirely after the longest transition finishes 
-            // (700ms delay + 500ms duration = 1200ms)
             const timer = setTimeout(() => {
                 setShowSkeleton(false);
             }, 1200);
@@ -40,7 +35,6 @@ export function Dashboard({
         }
     }, [dashboardData]);
 
-    // Fallback in case both conditions are unmet (edge case)
     if (!dashboardData && !showSkeleton) {
         return (
             <div className="min-h-screen bg-[#F5F3EA] flex justify-center py-20">
@@ -55,7 +49,6 @@ export function Dashboard({
             {/* --- SKELETON OVERLAY --- */}
             {showSkeleton && (
                 <div className="absolute inset-x-0 top-0 z-50 pointer-events-none">
-                    {/* Header Skeleton */}
                     <header className={`px-6 pt-12 pb-6 flex items-start justify-between transition-opacity duration-500 ease-out delay-0 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                         <div>
                             <div className="w-16 h-4 bg-[#e8e4d8] rounded animate-pulse mb-2 ml-2"></div>
@@ -68,7 +61,6 @@ export function Dashboard({
                     </header>
 
                     <main className="px-6 space-y-4 max-w-md mx-auto">
-                        {/* Assigned Room Skeleton */}
                         <div className={`transition-opacity duration-500 ease-out delay-75 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                             <BentoCard className="flex items-center justify-between p-6 relative bg-white/50 border-[#dcd8c8]">
                                 <div className="z-10">
@@ -79,7 +71,6 @@ export function Dashboard({
                             </BentoCard>
                         </div>
 
-                        {/* Middle Bento Grid Skeleton */}
                         <div className={`grid grid-cols-2 gap-4 transition-opacity duration-500 ease-out delay-150 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                             <div className="flex flex-col gap-4">
                                 <BentoCard className="p-6 flex flex-col items-center justify-center aspect-square relative bg-white/50 border-[#dcd8c8]">
@@ -106,7 +97,6 @@ export function Dashboard({
                             </div>
                         </div>
 
-                        {/* Team Name Skeleton */}
                         <div className={`transition-opacity duration-500 ease-out delay-200 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                             <BentoCard className="p-6 bg-white/50 border-[#dcd8c8]">
                                 <div className="w-20 h-3 bg-[#e8e4d8] animate-pulse mb-2 rounded"></div>
@@ -114,7 +104,6 @@ export function Dashboard({
                             </BentoCard>
                         </div>
 
-                        {/* Team Members Skeleton */}
                         <div className={`transition-opacity duration-500 ease-out delay-300 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                             <BentoCard className="p-6 bg-white/50 border-[#dcd8c8]">
                                 <div className="w-24 h-3 bg-[#e8e4d8] animate-pulse mb-4 rounded"></div>
@@ -129,7 +118,6 @@ export function Dashboard({
                             </BentoCard>
                         </div>
 
-                        {/* Guide Skeleton */}
                         <div className={`transition-opacity duration-500 ease-out delay-500 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                             <BentoCard className="p-6 bg-white/50 border-[#dcd8c8]">
                                 <div className="w-20 h-3 bg-[#e8e4d8] animate-pulse mb-2 rounded"></div>
@@ -139,7 +127,6 @@ export function Dashboard({
                         </div>
                     </main>
 
-                    {/* Footer Skeleton */}
                     <footer className={`py-12 text-center transition-opacity duration-500 ease-out delay-700 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
                         <div className="w-32 h-6 bg-[#e8e4d8] animate-pulse mx-auto mb-2 rounded"></div>
                         <div className="w-24 h-4 bg-[#e8e4d8] animate-pulse mx-auto rounded"></div>
@@ -151,16 +138,16 @@ export function Dashboard({
             {dashboardData && (
                 <>
                     {/* Header */}
-                    <header className="px-6 pt-12 pb-6 flex items-start justify-between relative z-10">
+                    <header className="px-6 pt-12 max-w-md pb-6 flex items-center mx-auto justify-between relative z-10">
                         <div>
                             <p className="text-sm font-medium mb-2 ml-2">Welcome,</p>
                             <div className="inline-flex items-center justify-center px-5 py-2.5 rounded-full border border-[#dcd8c8] bg-transparent">
-                                <span className="text-lg font-medium">{participant.name}</span>
+                                <span className="text-lg font-medium">{participant.name ? participant.name.charAt(0).toUpperCase() + participant.name.slice(1).toLowerCase() : ""}</span>
                             </div>
                         </div>
                         <div className="flex mt-2">
-                            <div className="w-6 h-6 rounded-full bg-[#fcd4a6] mix-blend-multiply z-10"></div>
-                            <div className="w-6 h-6 rounded-full bg-[#b4a6d4] mix-blend-multiply -ml-2"></div>
+                            <img className="w-12 h-12 object-contain" src="./luna-light-logo.png" alt="Logo" />
+
                         </div>
                     </header>
 
@@ -190,11 +177,10 @@ export function Dashboard({
                                         Attendance Status
                                     </p>
                                     <div
-                                        className={`w-16 h-16 rounded-full blur-xl absolute opacity-50 ${isAttended ? "bg-green-500" : "bg-red-500"
-                                            }`}
+                                        className={`w-16 h-16 rounded-full blur-xl absolute animate-pingg-slow ${isAttended ? "bg-green-500" : "bg-red-500"}`}
                                     ></div>
                                     <div
-                                        className={`w-12 h-12 rounded-full relative z-10 ${isAttended ? "bg-green-400" : "bg-[#ff7b7b]"
+                                        className={`w-12 h-12 rounded-full  relative z-10 ${isAttended ? "bg-green-400" : "bg-[#ff7b7b]"
                                             }`}
                                     ></div>
                                     <p className="text-[11px] font-semibold mt-6 z-10 absolute bottom-4">
@@ -202,53 +188,11 @@ export function Dashboard({
                                     </p>
                                 </BentoCard>
 
-                                {/* Avatar Card */}
-                                <BentoCard className="p-4 flex flex-col justify-between aspect-square relative bg-white/40 border border-[#1a73e8]/20 shadow-sm">
-                                    <p className="text-[10px] font-bold text-[#1a73e8] uppercase absolute top-4 left-4 tracking-wider">
-                                        Presentation Queue
-                                    </p>
-
-                                    <div className="mt-8 flex-1 flex flex-col justify-center w-full">
-                                        {queueData && queueData.length > 0 && dashboardData?.team ? (
-                                            (() => {
-                                                const currentTeam = queueData[0];
-                                                const myTeamIndex = queueData.findIndex((q: any) => q.team_id === dashboardData.team.id);
-
-                                                return (
-                                                    <div className="space-y-3 w-full">
-                                                        <div>
-                                                            <span className="block text-[9px] font-medium text-gray-400 uppercase tracking-tight">Now Presenting</span>
-                                                            <p className="text-sm font-bold text-gray-800 truncate">
-                                                                {currentTeam.team?.name || "Unknown"}
-                                                            </p>
-                                                        </div>
-
-                                                        {myTeamIndex !== -1 ? (
-                                                            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200/60">
-                                                                <div>
-                                                                    <span className="block text-[9px] text-gray-400">Your Position</span>
-                                                                    <p className="text-base font-extrabold text-gray-800">#{myTeamIndex + 1}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="block text-[9px] text-gray-400">Teams Ahead</span>
-                                                                    <p className="text-base font-extrabold text-gray-800">{myTeamIndex}</p>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <p className="text-[11px] font-medium text-gray-500 pt-2 border-t border-gray-200/60 leading-tight">
-                                                                Not in waiting queue.
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })()
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center h-full text-center text-gray-400 space-y-1">
-                                                <p className="text-xs font-medium">Queue Empty</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </BentoCard>
+                                {/* Cleaned Queue Component Instance */}
+                                <QueueBentoCard
+                                    queueData={queueData}
+                                    dashboardData={dashboardData}
+                                />
                             </div>
 
                             {/* Right Column */}
@@ -276,7 +220,7 @@ export function Dashboard({
                                 Team Name
                             </p>
                             <p className="text-lg font-bold leading-tight">
-                                {details?.input_1 || dashboardData.team?.name || "Pending..."}
+                                {dashboardData.team?.name || "Pending..."}
                             </p>
                         </BentoCard>
 

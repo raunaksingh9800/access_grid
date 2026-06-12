@@ -595,7 +595,7 @@ export default function ParticipantPage() {
         const channelName = `attendance_${participantId}`;
         const existing = supabase
             .getChannels()
-            .find((c) => c.topic === channelName);
+            .find((c) => c.topic === channelName || c.topic === `realtime:${channelName}`);
 
         if (!existing) {
             supabase
@@ -624,7 +624,7 @@ export default function ParticipantPage() {
         }
 
         const qChannelName = `queue_part_${participantId}`;
-        const qExisting = supabase.getChannels().find((c) => c.topic === qChannelName);
+        const qExisting = supabase.getChannels().find((c) => c.topic === qChannelName || c.topic === `realtime:${qChannelName}`);
 
         if (!qExisting) {
             supabase

@@ -1,65 +1,60 @@
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, UserCircle, Users } from 'lucide-react';
+import { UserCircle, Users } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-24 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-between bg-[#F4F3ED] px-6 py-12 text-[#2D2D2D] font-sans antialiased selection:bg-purple-200">
 
+      {/* Top Brand Logo Mimic */}
+      <div className="w-full max-w-md flex justify-start pl-4 pt-4">
+        <div className="flex gap-1.5 items-center">
+          <img className="w-12" src="/luna-light-logo.png" alt="" />
+        </div>
+      </div>
 
-      <div className="z-10 w-full max-w-4xl flex flex-col items-center gap-12 text-center">
-        <div className="space-y-4">
-          <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight">
-            <span className="text-primary">
-              AccessGrid
-            </span>{' '}
-            v6
+      {/* Main Content Area */}
+      <div className="flex flex-col items-center text-center max-w-md w-full px-4 my-auto gap-8">
+
+        {/* Placeholder for Character Illustration */}
+        <div className="w-64 h-64 relative my-4 flex items-center justify-center bg-white/40 rounded-full border border-dashed border-neutral-300">
+          <div className="w-72 h-72  rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
+            <img src="/mos.png" alt="mos" className="object-cover w-full h-full" />
+          </div>
+        </div>
+
+        {/* Typography block matching "Welcome to Iluna Forms" */}
+        <div className="space-y-1">
+          <p className="text-sm font-medium tracking-wide text-neutral-500">
+            Welcome to
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-neutral-900">
+            lluna <span className="font-normal text-neutral-600">Mark</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            The next-generation hackathon evaluation system. Seamlessly connect participants, guides, and evaluators in real-time.
+          <p className="text-xs text-neutral-400 max-w-xs mx-auto pt-2">
+            The next-generation evaluation system.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
-          <Link href="/participant" className="group">
-            <Card className="h-full transition-all hover:scale-[1.02] cursor-pointer">
-              <CardHeader className="text-center">
-                <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit mb-4 group-hover:bg-primary/20 transition-colors">
-                  <UserCircle className="w-10 h-10 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">Participant Portal</CardTitle>
-                <CardDescription className="text-base mt-2">
-                  View your allocated room, team details, and submit required links.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center pb-8">
-                <Button variant="ghost" className="group-hover:text-primary transition-colors">
-                  Enter Portal <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardContent>
-            </Card>
+        {/* Action Buttons styled like the primary "Countinue" button */}
+        <div className="w-full flex flex-col gap-3 pt-2">
+          <Link href="/participant" className="w-full">
+            <Button className="w-full bg-black hover:bg-neutral-800 text-white rounded-full py-6 text-base font-semibold transition-all shadow-sm">
+              Continue as Participant
+            </Button>
           </Link>
 
-          <Link href="/evaluator" className="group">
-            <Card className="h-full transition-all hover:scale-[1.02] cursor-pointer">
-              <CardHeader className="text-center">
-                <div className="mx-auto bg-ring/10 p-4 rounded-full w-fit mb-4 group-hover:bg-ring/20 transition-colors">
-                  <Users className="w-10 h-10 text-ring" />
-                </div>
-                <CardTitle className="text-2xl">Evaluator Portal</CardTitle>
-                <CardDescription className="text-base mt-2">
-                  Select events, view assigned teams, and mark live attendance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex justify-center pb-8">
-                <Button variant="ghost" className="group-hover:text-ring transition-colors">
-                  Enter Portal <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </CardContent>
-            </Card>
+          <Link href="/evaluator" className="w-full">
+            <Button className="w-full bg-transparent hover:bg-neutral-200/50  mt-2 text-neutral-700 rounded-full py-6 text-sm font-medium transition-all border border-neutral-400">
+              Enter Evaluator Portal
+            </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Subtle Footer Subtext matching "Continuing as..." */}
+      <div className="w-full text-center text-[11px] mt-4 font-medium text-neutral-400 tracking-wide">
+        System active for <span className="font-semibold text-neutral-600">Live events</span>
       </div>
     </div>
   );

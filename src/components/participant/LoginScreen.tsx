@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Card } from "./Card";
 
 interface LoginScreenProps {
     email: string;
@@ -21,43 +17,54 @@ export function LoginScreen({
     handleLogin,
 }: LoginScreenProps) {
     return (
-        <div className="min-h-screen bg-[#f8f9fa] flex flex-col items-center justify-center px-4">
-            <div className="w-full max-w-sm">
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5">
-                        <img src="./logo_acc.png" alt="Logo" />
-                    </div>
-                    <h1 className="text-2xl font-semibold text-[#202124] tracking-tight">
-                        SIP Participant Portal
+        <div className="min-h-dvh bg-[#f9f8f3] flex justify-center px-8 py-10">
+            {/* Main container matching the warm canvas layout */}
+            <div className="w-full max-w-md flex flex-col items-center text-center">
+
+                {/* Branding / Header Setup */}
+                <div className="flex gap-2 mb-0 w-full justify-start items-end z-10">
+                    <img className="w-12 h-12 object-contain" src="./luna-light-logo.png" alt="Logo" />
+                    <h1 className="text-3xl font-bold text-gray-900 relative top-1 left-4 tracking-tight">
+                        lluna <span className="font-light text-gray-500">Student</span>
                     </h1>
-                    <p className="mt-1.5 text-sm text-[#5f6368]">
-                        Sign in with your registered email
-                    </p>
                 </div>
-                <Card className="p-6 shadow-sm">
-                    <form onSubmit={handleLogin} className="space-y-5">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-medium text-[#3c4043]">
-                                Email address
-                            </Label>
-                            <Input
-                                type="email"
-                                placeholder="1at24bbnnn@atria.edu"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                className="h-11 border-[#dadce0] rounded-lg text-sm focus:border-[#1a73e8] focus:ring-1 focus:ring-[#1a73e8] placeholder:text-[#bdc1c6]"
-                            />
-                        </div>
-                        <Button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full h-10 bg-[#1a73e8] hover:bg-[#1557b0] text-white text-sm font-medium rounded-lg shadow-none transition-colors"
-                        >
-                            {loading ? <Loader2 className="animate-spin h-4 w-4" /> : "Continue"}
-                        </Button>
-                    </form>
-                </Card>
+
+                {/* Form Processing Area */}
+                <form onSubmit={handleLogin} className="mt-20 w-full text-left">
+                    <p className="mb-6 font-serif text-gray-500 text-center md:text-left">
+                        Enter your Atria issued email address
+                    </p>
+
+                    <input
+                        type="email"
+                        placeholder="name@atria.edu.in"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={loading}
+                        className="border border-black/10 w-full bg-white rounded-full py-3 px-5 text-gray-900 outline-none transition-all focus:border-black/30 placeholder:text-gray-400 text-base"
+                    />
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-black text-white py-3 rounded-full mt-6 text-lg font-medium hover:bg-gray-800 transition-all flex items-center justify-center gap-2 disabled:bg-gray-400"
+                    >
+                        {loading ? (
+                            <Loader2 className="animate-spin h-5 w-5 text-white" />
+                        ) : (
+                            "Continue"
+                        )}
+                    </button>
+                </form>
+
+                {/* Bottom Bento Box Accent (From your reference pattern) */}
+                <div className="rounded-[30px] mt-10 bg-white/40 border border-black/5 w-full h-72 flex items-center justify-center p-6 shadow-sm">
+                    <div className="text-center space-y-2">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">A Iluna Product</p>
+                        <p className="text-[11px] text-gray-400 font-medium">made with 🖤 in India</p>
+                    </div>
+                </div>
             </div>
         </div>
     );
