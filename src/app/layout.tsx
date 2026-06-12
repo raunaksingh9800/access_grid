@@ -30,6 +30,7 @@ export default function RootLayout({
         <meta property="og:image" content="./banner.png" />
 
 
+
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://app.lluna.in" />
         <meta property="twitter:title" content="lluna" />
@@ -40,6 +41,8 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#F1F1E9" />
+
       </head>
       <body
         className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}
