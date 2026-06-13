@@ -201,7 +201,7 @@ export function Dashboard({
                                 {/* Tips & Tricks */}
                                 <BentoCard className="p-5 flex-grow flex flex-col items-center justify-center">
                                     <p className="text-[11px] font-medium tracking-wide text-[#989893] uppercase text-center mb-3">
-                                        Tips & Tricks
+                                        All the best
                                     </p>
                                     <div className="w-12 h-12 bg-[#FFD3A5] border-[1.5px] border-black rounded-[12px] shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rotate-[-6deg] flex items-center justify-center">
                                         <span className="text-lg font-bold">💡</span>
