@@ -260,7 +260,7 @@ export function Dashboard({
                     {/* System Footer */}
                     <div className="text-center py-12 space-y-1 mt-6">
                         <h3 className="text-xl font-bold text-[#A3A3A3]">A Iluna Product</h3>
-                        <p className="text-xs text-[#A3A3A3] font-medium">made with ❤️ in India</p>
+                        <p className="text-xs text-[#A3A3A3] font-medium">Developed by Shalini , Raunak and Roshni</p>
                     </div>
                 </>
             )}

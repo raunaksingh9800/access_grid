@@ -27,7 +27,7 @@ export default function RootLayout({
         <meta property="og:url" content="https://app.lluna.in" />
         <meta property="og:title" content="lluna" />
         <meta property="og:description" content="This platform provides a centralized digital ecosystem to automate participant lifecycle management. From check-in to final judging" />
-        <meta property="og:image" content="./banner.png" />
+        <meta property="og:image" content="./bannergif.gif" />
 
 
 
@@ -35,7 +35,7 @@ export default function RootLayout({
         <meta property="twitter:url" content="https://app.lluna.in" />
         <meta property="twitter:title" content="lluna" />
         <meta property="twitter:description" content="This platform provides a centralized digital ecosystem to automate participant lifecycle management. From check-in to final judging" />
-        <meta property="twitter:image" content="./banner.png" />
+        <meta property="twitter:image" content="./bannergif.gif" />
 
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
